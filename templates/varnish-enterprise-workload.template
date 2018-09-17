@@ -45,33 +45,33 @@ Metadata:
       - QSS3KeyPrefix
     ParameterLabels:
       KeyPairName:
-        default: SSH Key Name
+        default: SSH key name
       OperatorEmail:
-        default: Operator Email
+        default: Operator email
       PublicSubnet1ID:
-        default: Public Subnet 1 ID
+        default: Public subnet 1 ID
       PublicSubnet2ID:
-        default: Public Subnet 2 ID
+        default: Public subnet 2 ID
       QSS3BucketName:
-        default: Quick Start S3 Bucket Name
+        default: Quick Start S3 bucket name
       QSS3KeyPrefix:
-        default: Quick Start S3 Key Prefix
+        default: Quick Start S3 key prefix
       VarnishBackendAddress:
-        default: Varnish Backend Address
+        default: Varnish backend address
       VarnishBackendProtocol:
-        default: Varnish Backend Protocol
+        default: Varnish backend protocol
       VHAToken:
-        default: VHA Token String
+        default: VHA token string
       VPCID:
         default: VPC ID
       WorkloadInstanceType:
-        default: Workload Servers Instance Type
+        default: Workload servers instance iype
       WorkloadNodesDesiredCapacity:
-        default: Workload Nodes Desired Capacity
+        default: Workload nodes desired capacity
       WorkloadNodesMaxSize:
-        default: Workload Nodes Max Size
+        default: Workload nodes max size
       WorkloadNodesMinSize:
-        default: Workload Nodes Min Size
+        default: Workload nodes min size
       WorkloadNodesSSHCIDR:
         default: Workload CIDR for SSH access
 Parameters:

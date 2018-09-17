@@ -48,35 +48,35 @@ Metadata:
           - QSS3KeyPrefix
     ParameterLabels:
       AvailabilityZones:
-        default: Availability Zones
+        default: Availability aones
       KeyPairName:
-        default: Key Pair Name
+        default: Key pair name
       OperatorEmail:
-        default: Operator Email
+        default: Operator email
       PublicSubnet1CIDR:
-        default: Public Subnet 1 CIDR
+        default: Public subnet 1 CIDR
       PublicSubnet2CIDR:
-        default: Public Subnet 2 CIDR
+        default: Public subnet 2 CIDR
       QSS3BucketName:
-        default: Quick Start S3 Bucket Name
+        default: Quick Start S3 bucket name
       QSS3KeyPrefix:
-        default: Quick Start S3 Key Prefix
+        default: Quick Start S3 key prefix
       VPCCIDR:
         default: VPC CIDR
       VarnishBackendAddress:
-        default: Varnish Backend Address
+        default: Varnish backend address
       VarnishBackendProtocol:
-        default: Varnish Backend Protocol
+        default: Varnish backend protocol
       VHAToken:
-        default: VHA Token String
+        default: VHA token string
       WorkloadInstanceType:
-        default: Workload Servers Instance Type
+        default: Workload servers instance type
       WorkloadoNodesDesiredCapacity:
-        default: Workload Nodes Desired Capacity
+        default: Workload nodes desired capacity
       WorkloadNodesMaxSize:
-        default: Workload Nodes Max Size
+        default: Workload nodes max size
       WorkloadNodesMinSize:
-        default: Workload Nodes Min Size
+        default: Workload nodes min size
 Parameters:
   AvailabilityZones:
     Description: >-
@@ -240,13 +240,13 @@ Parameters:
     Description: CIDR block for SSH clients
     Type: String
 Resources:
-  #TODO: VPC Submodule.
   VPCStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL:
-        Fn::Sub: https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/varnish-software-vcp-vpc.template
+      TemplateURL: !Sub 'https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}submodules/quickstart-aws-vpc/templates/aws-vpc.template'
       Parameters:
+        # VPC Template requires this, for now.
+        KeyPairName: !Ref 'KeyPairName'
         AvailabilityZones: !Join 
           - ','
           - !Ref AvailabilityZones
