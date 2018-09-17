@@ -1,0 +1,10 @@
+[
+    {
+        "ParameterName":"QSS3BucketName",
+        "ParameterValue":"$[taskcat_autobucket]"
+    },
+    {
+        "ParameterName":"KeyPairName",
+        "ParameterValue":"override"
+    }
+]
