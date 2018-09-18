@@ -20,5 +20,5 @@ global:
  
 tests:
   quickstart-varnish-enterprise:
-    parameter_input: quickstart-varnish-enterprise.json
-    template_file: quickstart-varnish-enterprise-master.template
+    parameter_input: varnish-enterprise.json
+    template_file: varnish-enterprise-master.template
