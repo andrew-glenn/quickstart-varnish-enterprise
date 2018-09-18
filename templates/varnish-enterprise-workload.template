@@ -508,10 +508,10 @@ Resources:
                 INSTANCEID=$(/usr/bin/curl -s http://169.254.169.254/latest/meta-data/instance-id)
 
                 touch ${FILE}
-                if ! /bin/grep -q ${INSTANCEID} ${FILE}; then
-                  /bin/echo "${INSTANCEID} = ${PUBLICIPV4}" | /usr/bin/tee -a ${FILE}
+                if ! /bin/grep -q ${!INSTANCEID} ${!FILE}; then
+                  /bin/echo "${!INSTANCEID} = ${!PUBLICIPV4}" | /usr/bin/tee -a ${!FILE}
                 else
-                  /bin/sed -i "/${INSTANCEID}/d" $FILE
+                  /bin/sed -i "/${!INSTANCEID}/d" $FILE
                 fi
               mode: "000755"
               owner: "root"
