@@ -1,10 +1,18 @@
 [
-    {
-        "ParameterName":"QSS3BucketName",
-        "ParameterValue":"$[taskcat_autobucket]"
-    },
-    {
-        "ParameterName":"KeyPairName",
-        "ParameterValue":"override"
-    }
+           {
+                      "ParameterKey": "QSS3BucketName",
+                      "ParameterValue": "$[taskcat_autobucket]"
+           },
+           {
+                      "ParameterKey": "KeyPairName",
+                      "ParameterValue": "override"
+           },
+           {
+                      "ParameterKey": "AvailabilityZones",
+                      "ParameterValue": "$[taskcat_genaz_2]"
+           },
+           {
+                      "ParameterKey": "OperatorEmail",
+                      "ParameterValue": "foo@example.com"
+           }
 ]
