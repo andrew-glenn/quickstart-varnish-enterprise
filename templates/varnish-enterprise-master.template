@@ -259,7 +259,7 @@ Resources:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL:
-        Fn::Sub: https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/varnish-software-vcp-workload.template
+        Fn::Sub: https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/varnish-enterprise-workload.template
       Parameters:
         WorkloadNodesSSHCIDR: !Ref WorkloadNodesSSHCIDR
         WorkloadInstanceType: !Ref WorkloadInstanceType
