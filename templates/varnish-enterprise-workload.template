@@ -511,7 +511,7 @@ Resources:
                 if ! /bin/grep -q ${!INSTANCEID} ${!FILE}; then
                   /bin/echo "${!INSTANCEID} = ${!PUBLICIPV4}" | /usr/bin/tee -a ${!FILE}
                 else
-                  /bin/sed -i "/${!INSTANCEID}/d" $FILE
+                  /bin/sed -i "/${!INSTANCEID}/d" ${!FILE}
                 fi
               mode: "000755"
               owner: "root"
