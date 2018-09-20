@@ -339,9 +339,7 @@ Resources:
       UnhealthyThresholdCount: 2
       Matcher:
         HttpCode: 200-399
-      Name: !Sub
-        - ${StackName}-http
-        - StackName: !Ref AWS::StackName
+      Name: quickstart-varnish-enterprise-http
       Port: 80
       Protocol: TCP
       VpcId: !Ref VPCID
@@ -355,9 +353,7 @@ Resources:
       UnhealthyThresholdCount: 2
       Matcher:
         HttpCode: 200-399
-      Name: !Sub
-        - ${StackName}-https
-        - StackName: !Ref AWS::StackName
+      Name: quickstart-varnish-enterprise-https
       Port: 443
       Protocol: TCP
       VpcId: !Ref VPCID
@@ -560,7 +556,7 @@ Resources:
         Fn::FindInMap:
         - AWSAMIRegionMap
         - Ref: AWS::Region
-        - UBUNTUVCP41
+        - UBUNTUVCP41œ
       InstanceMonitoring: 'true'
       IamInstanceProfile:
         Ref: SetupRoleProfile
