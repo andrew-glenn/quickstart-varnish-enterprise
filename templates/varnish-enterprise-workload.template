@@ -556,7 +556,7 @@ Resources:
         Fn::FindInMap:
         - AWSAMIRegionMap
         - Ref: AWS::Region
-        - UBUNTUVCP41œ
+        - UBUNTUVCP41
       InstanceMonitoring: 'true'
       IamInstanceProfile:
         Ref: SetupRoleProfile
