@@ -217,19 +217,19 @@ Rules:
   KeyPairsNotEmpty:
     Assertions:
     - Assert:
-        Fn::Not:
-        - Fn::EachMemberEquals:
-          - Fn::RefAll: AWS::EC2::KeyPair::KeyName
+        !Not
+        - !EachMemberEquals
+          - !RefAll AWS::EC2::KeyPair::KeyName
           - ''
       AssertDescription: All key pair parameters must not be empty
   SubnetsInVPC:
     Assertions:
     - Assert:
-        Fn::EachMemberIn:
-        - Fn::ValueOfAll:
+        !EachMemberIn
+        - !ValueOfAll
           - AWS::EC2::Subnet::Id
           - VpcId
-        - Fn::RefAll: AWS::EC2::VPC::Id
+        - !RefAll AWS::EC2::VPC::Id
       AssertDescription: All subnets must in the VPC
 Mappings:
   AWSAMIRegionMap:
@@ -307,8 +307,8 @@ Resources:
           StackName: !Ref AWS::StackName
       Scheme: internet-facing
       Subnets:
-      - Ref: PublicSubnet1ID
-      - Ref: PublicSubnet2ID
+      - !Ref PublicSubnet1ID
+      - !Ref PublicSubnet2ID
   NLBListener80:
     Type : AWS::ElasticLoadBalancingV2::Listener
     Properties:
@@ -383,7 +383,7 @@ Resources:
             Action:
             - s3:GetObject
             Resource:
-              Fn::Sub: arn:aws:s3:::${QSS3BucketName}/${QSS3KeyPrefix}*
+              !Sub arn:aws:s3:::${QSS3BucketName}/${QSS3KeyPrefix}*
       - PolicyName: WorkloadSetup
         PolicyDocument:
           Statement:
@@ -407,8 +407,7 @@ Resources:
   MountTargetSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      VpcId:
-        Ref: VPCID
+      VpcId: !Ref VPCID
       GroupDescription: Security group for mount target
       SecurityGroupIngress:
       - IpProtocol: tcp
@@ -421,8 +420,7 @@ Resources:
       PerformanceMode: generalPurpose
       FileSystemTags:
       - Key: Name
-        Value:
-          Ref: VolumeName
+        Value: !Ref VolumeName
   MountTargetPublicSubnet1:
     Type: AWS::EFS::MountTarget
     Properties:
@@ -489,7 +487,7 @@ Resources:
           files:
             "/etc/varnish/cfn-scripts/configure_varnish.sh":
               source:
-                Fn::Sub: 'https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}scripts/varnish.sh'
+               !Sub 'https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}scripts/varnish.sh'
               mode: "000755"
               owner: "root"
               group: "root"
@@ -552,8 +550,7 @@ Resources:
     Properties:
       KeyName:
         Ref: KeyPairName
-      ImageId:
-        Fn::FindInMap:
+      ImageId: !FindInMap
         - AWSAMIRegionMap
         - Ref: AWS::Region
         - UBUNTUVCP41
@@ -564,9 +561,8 @@ Resources:
         Ref: WorkloadInstanceType
       SecurityGroups:
       - Ref: WorkloadSecurityGroup
-      UserData:
-        Fn::Base64:
-          Fn::Sub: |
+      UserData: !Base64:
+         !Sub: |
             #!/bin/bash -xe
             export PATH=$PATH:/usr/local/bin
             apt-get update
@@ -724,8 +720,7 @@ Resources:
 Outputs:
   NLBDNSName:
     Description: NLB DNS Name
-    Value:
-      Fn::GetAtt:
+    Value: !GetAtt:
       - PublicNLB
       - DNSName
   FileSystemID:
