@@ -429,7 +429,7 @@ Resources:
   MountTargetPublicSubnet2:
     Type: AWS::EFS::MountTarget
     Properties:
-      FileSystemIdI: !Ref FileSystem
+      FileSystemId: !Ref FileSystem
       SubnetId: !Ref PublicSubnet2ID
       SecurityGroups:
       - !Ref MountTargetSecurityGroup
@@ -540,7 +540,8 @@ Resources:
               command: !Sub "/etc/varnish/cfn-scripts/configure_varnish.sh ${VarnishBackendAddress} ${VarnishBackendProtocol} ${VHAToken}"
         cleanup: {}
     Properties:
-      KeyName: !Ref KeyPairName
+      KeyName:
+        !Ref KeyPairName
       ImageId: !FindInMap
         - AWSAMIRegionMap
         - !Ref AWS::Region
@@ -549,9 +550,10 @@ Resources:
       IamInstanceProfile: !Ref SetupRoleProfile
       InstanceType: !Ref WorkloadInstanceType
       SecurityGroups:
-      - !Ref WorkloadSecurityGroup
-      UserData: !Base64:
-         !Sub: |
+        - !Ref WorkloadSecurityGroup
+      UserData: !Base64
+         Fn::Sub:
+           - |
             #!/bin/bash -xe
             export PATH=$PATH:/usr/local/bin
             apt-get update
@@ -664,7 +666,7 @@ Resources:
       MetricsCollection:
         -
           Granularity: "1Minute"
-          Metrics: 
+          Metrics:
             - "GroupMinSize"
             - "GroupMaxSize"
             - "GroupPendingInstances"
@@ -697,7 +699,7 @@ Resources:
 Outputs:
   NLBDNSName:
     Description: NLB DNS Name
-    Value: !GetAtt:
+    Value: !GetAtt
       - PublicNLB
       - DNSName
   FileSystemID:
