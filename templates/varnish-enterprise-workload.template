@@ -299,10 +299,7 @@ Resources:
     Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
     Properties:
       Type: network
-      Name: !Sub
-        - ${StackName}-nlb
-        -
-          StackName: !Ref AWS::StackName
+      Name: "qs-varnish-ent-nlb"
       Scheme: internet-facing
       Subnets:
       - !Ref PublicSubnet1ID
