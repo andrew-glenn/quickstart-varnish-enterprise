@@ -239,14 +239,10 @@ Mappings:
       UBUNTUVCP41: ami-c035e0bf
     ap-northeast-2:
       UBUNTUVCP41: ami-e5fd488b
-    ap-south-1:
-      UBUNTUVCP41: ami-19f6dc76
     ap-southeast-1:
       UBUNTUVCP41: ami-b14a49cd
     ap-southeast-2:
       UBUNTUVCP41: ami-f881589a
-    ca-central-1:
-      UBUNTUVCP41: ami-5cdf5d38
     eu-central-1:
       UBUNTUVCP41: ami-54dce0bf
     eu-west-1:
@@ -255,8 +251,6 @@ Mappings:
       UBUNTUVCP41: ami-e553bd82
     eu-west-3:
       UBUNTUVCP41: ami-4c0bba31
-    sa-east-1:
-      UBUNTUVCP41: ami-d982d8b5
     us-east-1:
       UBUNTUVCP41: ami-58ffab27
     us-east-2:
