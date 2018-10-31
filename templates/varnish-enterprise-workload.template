@@ -56,6 +56,8 @@ Metadata:
         default: Quick Start S3 bucket name
       QSS3KeyPrefix:
         default: Quick Start S3 key prefix
+      VarnishSSLCertificateSecretsManagerKey:
+        default: The SecretsManager Key of an existing SSL Certificate to install within Varnish.
       VarnishBackendAddress:
         default: Varnish backend address
       VarnishBackendProtocol:
@@ -106,6 +108,10 @@ Parameters:
       numbers, lowercase letters, uppercase letters, and hyphens (-). It
       cannot start or end with a hyphen (-).
     Type: String
+  VarnishSSLCertificateSecretsManagerKey:
+    Description: The SecretsManager Key of an existing SSL Certificate to install within Varnish. See Deployment Guide.
+    Type: String
+    Default: ""
   QSS3KeyPrefix:
     AllowedPattern: ^[0-9a-zA-Z-/]*$
     ConstraintDescription: >-
@@ -231,6 +237,9 @@ Rules:
           - VpcId
         - !RefAll AWS::EC2::VPC::Id
       AssertDescription: All subnets must in the VPC
+Conditions:
+  UserProvidedSSL:
+    !Not [ !Equals [ !Ref VarnishSSLCertificateSecretsManagerKey, "" ]]
 Mappings:
   AWSAMIRegionMap:
     AMI:
@@ -278,12 +287,12 @@ Resources:
      VpcId: !Ref VPCID
      SecurityGroupIngress:
      - IpProtocol: tcp
-       FromPort: '80'
-       ToPort: '80'
+       FromPort: 80
+       ToPort: 80
        CidrIp: 0.0.0.0/0
      - IpProtocol: tcp
-       FromPort: '443'
-       ToPort: '443'
+       FromPort: 443
+       ToPort: 443
        CidrIp: 0.0.0.0/0
 #
 # Network Load Balancer, NLB, related
@@ -400,8 +409,8 @@ Resources:
       GroupDescription: Security group for mount target
       SecurityGroupIngress:
       - IpProtocol: tcp
-        FromPort: '2049'
-        ToPort: '2049'
+        FromPort: 2049
+        ToPort: 2049
         CidrIp: 0.0.0.0/0
   FileSystem:
     Type: AWS::EFS::FileSystem
@@ -436,16 +445,16 @@ Resources:
       VpcId: !Ref VPCID
       SecurityGroupIngress:
       - IpProtocol: tcp
-        FromPort: '80'
-        ToPort: '80'
+        FromPort: 80
+        ToPort: 80
         SourceSecurityGroupId: !Ref ELBSecurityGroup
       - IpProtocol: tcp
-        FromPort: '443'
-        ToPort: '443'
+        FromPort: 443
+        ToPort: 443
         SourceSecurityGroupId: !Ref ELBSecurityGroup
       - IpProtocol: tcp
-        FromPort: '22'
-        ToPort: '22'
+        FromPort: 22
+        ToPort: 22
         CidrIp: !Ref WorkloadNodesSSHCIDR
   WorkloadASLaunchConfig:
     Type: AWS::AutoScaling::LaunchConfiguration
@@ -457,10 +466,12 @@ Resources:
       AWS::CloudFormation::Init:
         configSets:
           quickstart:
-          - install
-          - configure
+          - install_common
+          - install_ssl
+          - configure_common
+          - configure_ssl
           - cleanup
-        install:
+        install_common:
           packages:
             apt:
               nfs-common: []
@@ -494,7 +505,7 @@ Resources:
               owner: "root"
               group: "root"
             "/etc/varnish/cfn-scripts/crontab":
-              content: !Sub "*/1 * * * * /etc/varnish/cfn-scripts/crontab_nodes_diff.sh\n"
+              content: "*/1 * * * * /etc/varnish/cfn-scripts/crontab_nodes_diff.sh"
               mode: "000644"
               owner: "root"
               group: "root"
@@ -512,23 +523,43 @@ Resources:
               mode: "000755"
               owner: "root"
               group: "root"
-        configure:
+        install_ssl:
+          commands:
+            01_fetch_ssl_from_secrets_manager:
+              !If
+              - UserProvidedSSL
+              - !Sub |
+                /usr/bin/aws --region ${AWS::Region} secretsmanager get-secret-value --secret-id ${VarnishSSLCertificateSecretsManagerKey}  | jq -r '.SecretString | fromjson | ."public-key", ."private-key" | tostring' | grep -v null > /etc/hitch/cert.pem
+              - ""
+        configure_common:
           commands:
             01_createsymlink:
-              command: !Sub "ln -s /etc/varnish/cfn-scripts/manage_vha_nodes.sh /etc/rc0.d/S01manage_vha_nodes"
+              command: "ln -s /etc/varnish/cfn-scripts/manage_vha_nodes.sh /etc/rc0.d/S01manage_vha_nodes"
             02_mount_efs:
               command: !Sub >
                 mount -t nfs4 -o nfsvers=4.1 ${FileSystem}.efs.${AWS::Region}.amazonaws.com:/ /${MountPoint}
             03_permissions:
               command: !Sub "chown ubuntu:ubuntu /${MountPoint}"
             04_create_vha_nodes:
-              command: !Sub "/etc/varnish/cfn-scripts/manage_vha_nodes.sh"
+              command: "/etc/varnish/cfn-scripts/manage_vha_nodes.sh"
             05_create_crontab:
-              command: !Sub "crontab /etc/varnish/cfn-scripts/crontab"
+              command: "crontab /etc/varnish/cfn-scripts/crontab"
             06_run_copy_once:
               command: !Sub "cp /${MountPoint}/nodes.conf /etc/varnish/nodes.conf"
             07_configure_varnish:
               command: !Sub "/etc/varnish/cfn-scripts/configure_varnish.sh ${VarnishBackendAddress} ${VarnishBackendProtocol} ${VHAToken}"
+        configure_ssl:
+          commands:
+            01_modify_hitch_config_file:
+              !If
+              - UserProvidedSSL
+              - "sed -i 's,/etc/hitch/testcert.pem,/etc/hitch/cert.pem,g' /etc/hitch/hitch.config"
+              - ''
+            02_restart_hitch_service:
+              !If
+              - UserProvidedSSL
+              - "service hitch restart"
+              - ''
         cleanup: {}
     Properties:
       KeyName:
@@ -537,7 +568,7 @@ Resources:
         - AWSAMIRegionMap
         - !Ref AWS::Region
         - UBUNTUVCP41
-      InstanceMonitoring: 'true'
+      InstanceMonitoring: true
       IamInstanceProfile: !Ref SetupRoleProfile
       InstanceType: !Ref WorkloadInstanceType
       SecurityGroups:
@@ -561,14 +592,14 @@ Resources:
       AdjustmentType: ChangeInCapacity
       AutoScalingGroupName: !Ref WorkloadAutoScalingGroup
       Cooldown: '300'
-      ScalingAdjustment: '1'
+      ScalingAdjustment: 1
   WorkloadScaleDownPolicy:
     Type: AWS::AutoScaling::ScalingPolicy
     Properties:
       AdjustmentType: ChangeInCapacity
       AutoScalingGroupName: !Ref WorkloadAutoScalingGroup
       Cooldown: '300'
-      ScalingAdjustment: '-1'
+      ScalingAdjustment: -1
   CPUAlarmHigh:
     Type: AWS::CloudWatch::Alarm
     Properties:
@@ -576,9 +607,9 @@ Resources:
       MetricName: CPUUtilization
       Namespace: AWS/EC2
       Statistic: Average
-      Period: '60'
-      EvaluationPeriods: '5'
-      Threshold: '60'
+      Period: 60
+      EvaluationPeriods: 5
+      Threshold: 60
       AlarmActions:
       - !Ref WorkloadScaleUpPolicy
       Dimensions:
@@ -592,9 +623,9 @@ Resources:
       MetricName: CPUUtilization
       Namespace: AWS/EC2
       Statistic: Average
-      Period: '60'
-      EvaluationPeriods: '30'
-      Threshold: '40'
+      Period: 60
+      EvaluationPeriods: 30
+      Threshold: 40
       AlarmActions:
       - !Ref WorkloadScaleDownPolicy
       Dimensions:
@@ -608,9 +639,9 @@ Resources:
       MetricName: NetworkIn
       Namespace: AWS/EC2
       Statistic: Average
-      Period: '60'
-      EvaluationPeriods: '5'
-      Threshold: '500000000'
+      Period: 60
+      EvaluationPeriods: 5
+      Threshold: 500000000
       AlarmActions:
       - !Ref WorkloadScaleUpPolicy
       Dimensions:
@@ -624,9 +655,9 @@ Resources:
       MetricName: NetworkIn
       Namespace: AWS/EC2
       Statistic: Average
-      Period: '60'
-      EvaluationPeriods: '30'
-      Threshold: '300000000'
+      Period: 60
+      EvaluationPeriods: 30
+      Threshold: 300000000
       AlarmActions:
       - !Ref WorkloadScaleDownPolicy
       Dimensions:
@@ -638,15 +669,13 @@ Resources:
     DependsOn:
     - MountTargetPublicSubnet1
     - MountTargetPublicSubnet2
-    - PublicNLBTargetGroup80
-    - PublicNLBTargetGroup443
     Properties:
       VPCZoneIdentifier:
       - !Ref PublicSubnet1ID
       - !Ref PublicSubnet2ID
       Cooldown: '600'
       DesiredCapacity: !Ref WorkloadNodesDesiredCapacity
-      HealthCheckGracePeriod: '600'
+      HealthCheckGracePeriod: 600
       HealthCheckType: EC2
       LaunchConfigurationName: !Ref WorkloadASLaunchConfig
       TargetGroupARNs:
@@ -677,7 +706,7 @@ Resources:
       Tags:
       - Key: Name
         Value: Workload VCP cluster node
-        PropagateAtLaunch: 'true'
+        PropagateAtLaunch: true
     CreationPolicy:
       ResourceSignal:
         Count: !Ref WorkloadNodesDesiredCapacity
