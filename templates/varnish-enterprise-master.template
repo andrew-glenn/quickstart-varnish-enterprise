@@ -30,6 +30,7 @@ Metadata:
       - Label:
           default: VCP Workload Nodes Configuration
         Parameters:
+          - VarnishSSLCertificateSecretsManagerKey
           - WorkloadNodesSSHCIDR
           - WorkloadNodesMinSize
           - WorkloadNodesMaxSize
@@ -63,6 +64,8 @@ Metadata:
         default: Quick Start S3 key prefix
       VPCCIDR:
         default: VPC CIDR
+      VarnishSSLCertificateSecretsManagerKey:
+        default: The SecretsManager Key of an existing SSL Certificate to install within Varnish.
       VarnishBackendAddress:
         default: Varnish backend address
       VarnishBackendProtocol:
@@ -71,7 +74,7 @@ Metadata:
         default: VHA token string
       WorkloadInstanceType:
         default: Workload servers instance type
-      WorkloadoNodesDesiredCapacity:
+      WorkloadNodesDesiredCapacity:
         default: Workload nodes desired capacity
       WorkloadNodesMaxSize:
         default: Workload nodes max size
@@ -143,6 +146,10 @@ Parameters:
     Description: Internet protocol. It can be either http or https.
     Default: http
     Type: String
+  VarnishSSLCertificateSecretsManagerKey:
+    Description: The SecretsManager Key of an existing SSL Certificate to install within Varnish. See Deployment Guide.
+    Type: String
+    Default: AWS::NoValue
   VHAToken:
     AllowedPattern: ^[0-9a-zA-Z-/_=]*$
     ConstraintDescription: >-
@@ -247,7 +254,7 @@ Resources:
       Parameters:
         # VPC Template requires this, for now.
         KeyPairName: !Ref 'KeyPairName'
-        AvailabilityZones: !Join 
+        AvailabilityZones: !Join
           - ','
           - !Ref AvailabilityZones
         NumberOfAZs: '2'
@@ -268,19 +275,20 @@ Resources:
         WorkloadNodesMinSize: !Ref WorkloadNodesMinSize
         KeyPairName: !Ref KeyPairName
         OperatorEmail: !Ref OperatorEmail
-        PublicSubnet1ID: !GetAtt 
+        PublicSubnet1ID: !GetAtt
           - VPCStack
           - Outputs.PublicSubnet1ID
-        PublicSubnet2ID: !GetAtt 
+        PublicSubnet2ID: !GetAtt
           - VPCStack
           - Outputs.PublicSubnet2ID
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         VarnishBackendAddress: !Ref VarnishBackendAddress
         VarnishBackendProtocol: !Ref VarnishBackendProtocol
+        VarnishSSLCertificateSecretsManagerKey: !Ref VarnishSSLCertificateSecretsManagerKey
         VHAToken: !Ref VHAToken
         VolumeName: !Ref VolumeName
         MountPoint: !Ref MountPoint
-        VPCID: !GetAtt 
+        VPCID: !GetAtt
           - VPCStack
           - Outputs.VPCID
