@@ -302,7 +302,6 @@ Resources:
     Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
     Properties:
       Type: network
-      Name: "qs-varnish-ent-nlb"
       Scheme: internet-facing
       Subnets:
       - !Ref PublicSubnet1ID
@@ -337,7 +336,6 @@ Resources:
       UnhealthyThresholdCount: 2
       Matcher:
         HttpCode: 200-399
-      Name: qs-varnish-ent-80
       Port: 80
       Protocol: TCP
       VpcId: !Ref VPCID
@@ -351,7 +349,6 @@ Resources:
       UnhealthyThresholdCount: 2
       Matcher:
         HttpCode: 200-399
-      Name: qs-varnish-ent-443
       Port: 443
       Protocol: TCP
       VpcId: !Ref VPCID
@@ -526,7 +523,7 @@ Resources:
         install_ssl:
           commands:
             01_fetch_ssl_from_secrets_manager:
-              !If
+              command: !If
               - UserProvidedSSL
               - !Sub |
                 /usr/bin/aws --region ${AWS::Region} secretsmanager get-secret-value --secret-id ${VarnishSSLCertificateSecretsManagerKey}  | jq -r '.SecretString | fromjson | ."public-key", ."private-key" | tostring' | grep -v null > /etc/hitch/cert.pem
