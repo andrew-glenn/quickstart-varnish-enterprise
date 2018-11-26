@@ -388,6 +388,20 @@ Resources:
             - cloudwatch:EnableAlarmActions
             - cloudwatch:PutMetricAlarm
             Resource: '*'
+  WorkloadFetchSSLPolicy:
+    Type: AWS::IAM::Policy
+    Condition: UserProvidedSSL
+    Properties:
+      Roles:
+        - !Ref SetupRole
+      PolicyName: FetchSSLFromSecretsManager
+      PolicyDocument:
+        Statement:
+        - Effect: Allow
+          Action:
+            - secretsmanager:GetSecretValue
+          Resource: arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${VarnishSSLCertificateSecretsManagerKey}
+
   SetupRoleProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
@@ -522,7 +536,19 @@ Resources:
               group: "root"
         install_ssl:
           commands:
-            01_fetch_ssl_from_secrets_manager:
+            01_install_pip:
+              command:
+                !If
+              - UserProvidedSSL
+              - "apt-get -y install python-pip"
+              - ""
+            02_install_awscli:
+              command:
+                !If
+              - UserProvidedSSL
+              - "pip install awscli"
+              - ""
+            03_fetch_ssl_from_secrets_manager:
               command: !If
               - UserProvidedSSL
               - !Sub |
