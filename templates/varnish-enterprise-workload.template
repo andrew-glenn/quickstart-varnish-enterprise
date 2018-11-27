@@ -552,7 +552,7 @@ Resources:
               command: !If
               - UserProvidedSSL
               - !Sub |
-                /usr/bin/aws --region ${AWS::Region} secretsmanager get-secret-value --secret-id ${VarnishSSLCertificateSecretsManagerKey}  | jq -r '.SecretString | fromjson | ."public-key", ."private-key" | tostring' | grep -v null > /etc/hitch/cert.pem
+                /usr/local/bin/aws --region ${AWS::Region} secretsmanager get-secret-value --secret-id ${VarnishSSLCertificateSecretsManagerKey}  | jq -r '.SecretString'  /etc/hitch/cert.pem
               - ""
         configure_common:
           commands:
