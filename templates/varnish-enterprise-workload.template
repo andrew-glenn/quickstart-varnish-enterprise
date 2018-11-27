@@ -400,7 +400,7 @@ Resources:
         - Effect: Allow
           Action:
             - secretsmanager:GetSecretValue
-          Resource: !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${VarnishSSLCertificateSecretsManagerKey}'
+          Resource: !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${VarnishSSLCertificateSecretsManagerKey}*'
 
   SetupRoleProfile:
     Type: AWS::IAM::InstanceProfile
