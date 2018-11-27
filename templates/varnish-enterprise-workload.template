@@ -516,7 +516,7 @@ Resources:
               owner: "root"
               group: "root"
             "/etc/varnish/cfn-scripts/crontab":
-              content: "*/1 * * * * /etc/varnish/cfn-scripts/crontab_nodes_diff.sh"
+              content: "*/1 * * * * /etc/varnish/cfn-scripts/crontab_nodes_diff.sh\n"
               mode: "000644"
               owner: "root"
               group: "root"
@@ -552,7 +552,7 @@ Resources:
               command: !If
               - UserProvidedSSL
               - !Sub |
-                /usr/local/bin/aws --region ${AWS::Region} secretsmanager get-secret-value --secret-id ${VarnishSSLCertificateSecretsManagerKey}  | jq -r '.SecretString'  /etc/hitch/cert.pem
+                /usr/local/bin/aws --region ${AWS::Region} secretsmanager get-secret-value --secret-id ${VarnishSSLCertificateSecretsManagerKey}  | jq -r '.SecretString' >  /etc/hitch/cert.pem
               - ""
         configure_common:
           commands:
@@ -576,7 +576,7 @@ Resources:
             01_modify_hitch_config_file:
               !If
               - UserProvidedSSL
-              - "sed -i 's,/etc/hitch/testcert.pem,/etc/hitch/cert.pem,g' /etc/hitch/hitch.config"
+              - "sed -i 's,/etc/hitch/testcert.pem,/etc/hitch/cert.pem,g' /etc/hitch/hitch.conf"
               - ''
             02_restart_hitch_service:
               !If
