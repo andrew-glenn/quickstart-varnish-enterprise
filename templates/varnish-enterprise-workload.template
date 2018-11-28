@@ -537,14 +537,12 @@ Resources:
         install_ssl:
           commands:
             01_install_pip:
-              command:
-                !If
+              command: !If
               - UserProvidedSSL
               - "apt-get -y install python-pip"
               - "touch /tmp/.nossl"
             02_install_awscli:
-              command:
-                !If
+              command: !If
               - UserProvidedSSL
               - "pip install awscli"
               - "touch /tmp/.nossl"
@@ -574,15 +572,15 @@ Resources:
         configure_ssl:
           commands:
             01_modify_hitch_config_file:
-              !If
-              - UserProvidedSSL
-              - "sed -i 's,/etc/hitch/testcert.pem,/etc/hitch/cert.pem,g' /etc/hitch/hitch.conf"
-              - "touch /tmp/.nossl"
+              command: !If
+                - UserProvidedSSL
+                - "sed -i 's,/etc/hitch/testcert.pem,/etc/hitch/cert.pem,g' /etc/hitch/hitch.conf"
+                - "touch /tmp/.nossl"
             02_restart_hitch_service:
-              !If
-              - UserProvidedSSL
-              - "service hitch restart"
-              - "touch /tmp/.nossl"
+              command: !If
+                - UserProvidedSSL
+                - "service hitch restart"
+                - "touch /tmp/.nossl"
         cleanup: {}
     Properties:
       KeyName:
