@@ -541,19 +541,19 @@ Resources:
                 !If
               - UserProvidedSSL
               - "apt-get -y install python-pip"
-              - ""
+              - "touch /tmp/.nossl"
             02_install_awscli:
               command:
                 !If
               - UserProvidedSSL
               - "pip install awscli"
-              - ""
+              - "touch /tmp/.nossl"
             03_fetch_ssl_from_secrets_manager:
               command: !If
               - UserProvidedSSL
               - !Sub |
                 /usr/local/bin/aws --region ${AWS::Region} secretsmanager get-secret-value --secret-id ${VarnishSSLCertificateSecretsManagerKey}  | jq -r '.SecretString' >  /etc/hitch/cert.pem
-              - ""
+              - "touch /tmp/.nossl"
         configure_common:
           commands:
             01_createsymlink:
@@ -577,12 +577,12 @@ Resources:
               !If
               - UserProvidedSSL
               - "sed -i 's,/etc/hitch/testcert.pem,/etc/hitch/cert.pem,g' /etc/hitch/hitch.conf"
-              - ''
+              - "touch /tmp/.nossl"
             02_restart_hitch_service:
               !If
               - UserProvidedSSL
               - "service hitch restart"
-              - ''
+              - "touch /tmp/.nossl"
         cleanup: {}
     Properties:
       KeyName:
@@ -604,9 +604,8 @@ Resources:
             apt-get update
             apt-get -y install python-setuptools
             easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
-            cfn-init --stack ${AWS::StackName} --resource WorkloadASLaunchConfig --configsets quickstart --region ${AWS::Region}
-            # run our scripts here
             echo ${VarnishBackendAddress} ${VarnishBackendProtocol} ${VHAToken} > /etc/varnish/check_inputs.txt
+            cfn-init --stack ${AWS::StackName} --resource WorkloadASLaunchConfig --configsets quickstart --region ${AWS::Region}
             # Signal the status from cfn-init
             cfn-signal -e $? --stack ${AWS::StackName} --resource WorkloadAutoScalingGroup --region ${AWS::Region}
   WorkloadScaleUpPolicy:
