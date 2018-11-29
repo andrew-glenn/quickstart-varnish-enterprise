@@ -21,3 +21,5 @@ tests:
   qs-varnish-enterprise-byossl:
     parameter_input: varnish-enterprise-byossl.json
     template_file: varnish-enterprise-master.template
+    regions:
+      - us-east-1
