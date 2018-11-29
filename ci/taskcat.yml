@@ -18,10 +18,6 @@ tests:
   qs-varnish-enterprise:
     parameter_input: varnish-enterprise.json
     template_file: varnish-enterprise-master.template
-    regions:
-      - us-east-1
   qs-varnish-enterprise-byossl:
     parameter_input: varnish-enterprise-byossl.json
     template_file: varnish-enterprise-master.template
-    regions:
-      - us-east-1
