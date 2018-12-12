@@ -80,6 +80,8 @@ Metadata:
         default: Workload nodes max size
       WorkloadNodesMinSize:
         default: Workload nodes min size
+      WorkloadNodesSSHCIDR:
+        default: CIDR Range used to access the VCP nodes.
 Parameters:
   AvailabilityZones:
     Description: >-
@@ -137,7 +139,7 @@ Parameters:
   VarnishBackendAddress:
     Description: >-
       Web server backend IP/Hostname address. Customized port/tcp can be added
-      after colon (:).
+      after colon (:). Ex: 127.0.0.1:80
     Default: 127.0.0.1
     Type: String
   VarnishBackendProtocol:

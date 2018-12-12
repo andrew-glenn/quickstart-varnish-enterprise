@@ -32,6 +32,7 @@ Metadata:
       - WorkloadNodesMaxSize
       - WorkloadNodesDesiredCapacity
       - OperatorEmail
+      - VarnishSSLCertificateSecretsManagerKey
     - Label:
         default: Varnish Software Configuration
       Parameters:
@@ -57,7 +58,7 @@ Metadata:
       QSS3KeyPrefix:
         default: Quick Start S3 key prefix
       VarnishSSLCertificateSecretsManagerKey:
-        default: The SecretsManager Key of an existing SSL Certificate to install within Varnish.
+        default: SecretsManager Key of SSL Certificate.
       VarnishBackendAddress:
         default: Varnish backend address
       VarnishBackendProtocol:
@@ -75,7 +76,7 @@ Metadata:
       WorkloadNodesMinSize:
         default: Workload nodes min size
       WorkloadNodesSSHCIDR:
-        default: Workload CIDR for SSH access
+        default: CIDR Range used to access the VCP nodes.
 Parameters:
   KeyPairName:
     Description: >-
@@ -126,7 +127,7 @@ Parameters:
   VarnishBackendAddress:
     Description: >-
       Web server backend IP/Hostname address. Customized port/tcp can be added
-      after colon (:).
+      after colon (:). Ex: 127.0.0.1:80
     Default: 127.0.0.1
     Type: String
   VarnishBackendProtocol:
