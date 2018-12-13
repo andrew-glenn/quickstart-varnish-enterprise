@@ -130,7 +130,7 @@ Parameters:
     Type: String
   VarnishBackendAddress:
     Description: >-
-      Web server backend IP/Hostname address. Customized port/TCP can be added
+      Web server backend IP/hostname address. Customized port/TCP can be added
       after colon (:). For example: 127.0.0.1:80
     Default: 127.0.0.1
     Type: String
@@ -145,12 +145,12 @@ Parameters:
     ConstraintDescription: >-
       Varnish High Availability (VHA) Token for VHA agents to do a caching
       synchronization. The Token can include numbers, lowercase letters,
-      uppercase letters, hyphens (-), underscore (_), equal (=) and
-      forward slash (/).
+      uppercase letters, hyphens (-), underscores (_), equal signs (=), and
+      forward slashes (/).
     Description: >-
       Varnish High Availability (VHA) Token can include numbers, lowercase
-      letters, uppercase letters, hyphens (-), underscore (_), equal (=)
-      and forward slash (/).
+      letters, uppercase letters, hyphens (-), underscores (_), equal signs (=),
+      and forward slashes (/).
     Default: MYTOKEN
     MinLength: '1'
     Type: String
