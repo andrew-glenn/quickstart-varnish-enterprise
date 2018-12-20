@@ -25,8 +25,8 @@ Metadata:
       - Label:
           default: Amazon EFS Configuration
         Parameters:
-        - VolumeName
-        - MountPoint
+          - VolumeName
+          - MountPoint
       - Label:
           default: VCP Workload Nodes Configuration
         Parameters:
@@ -70,8 +70,6 @@ Metadata:
         default: Linux mount point
       VarnishSSLCertificateSecretsManagerKey:
         default: Secrets Manager key of SSL certificate
-      WorkloadNodesSSHCIDR:
-        default: SSH CIDR
       VarnishBackendAddress:
         default: Varnish backend address
       VarnishBackendProtocol:
