@@ -6,7 +6,7 @@ This Quick Start deploys Varnish Cache Plus (VCP) on the AWS Cloud in about 30 m
 
 VCP is the commercial enterprise version of the open-source HTTP engine and reverse HTTP proxy, Varnish Cache (VC). Both versions of Varnish speed up a website by caching (storing) a copy of a page served by your web server the first time a user visits your page. The next time the user requests the same page, the cache will serve the copy quickly, instead of requesting the page from the web server again. VCP provides usability improvements and performance enhancements over VC.
 
-This Quick Start deploys VCP into a Multi-AZ configuration on AWS with asynchronous caching data replication between Availability Zones. You can choose to deploy VCP into a new or your existing environment. The Quick Start uses Ubuntu Linux as the operating system for the VCP instances.
+This Quick Start deploys VCP into a Multi-AZ configuration on AWS with asynchronous caching data replication between Availability Zones. The Quick Start uses Ubuntu Linux as the operating system for the VCP instances.
 
 The Quick Start offers two deployment options:
 
