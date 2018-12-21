@@ -6,7 +6,7 @@ Description: >-
   cluster behind an NLB. The cluster is configured to use an S3 bucket for
   storage  and EFS to exchange data among workload nodes **WARNING** This
   template creates EC2 instances and related resources. You will be billed
-  for the AWS resources used if you create a stack from this template.
+  for the AWS resources used if you create a stack from this template. (qs-1p582k6jj)
 Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:
