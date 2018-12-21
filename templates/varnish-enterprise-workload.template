@@ -4,7 +4,7 @@ Description: >-
   This workload template deploys VCPs behind an NLB load balancer in two
   private subnets. The cluster also is configured to use an S3 bucket for
   storage. ***NOTE*** You must subscribe to the Varnish Cache Plus 4.1 (Ubuntu)
-  AMI HVM from the AWS Marketplace before you launch this template.
+  AMI HVM from the AWS Marketplace before you launch this template. (qs-1p582k9b1)
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
