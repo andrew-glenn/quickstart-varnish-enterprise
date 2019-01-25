@@ -1,10 +1,11 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
 Description: >-
-  This workload template deploys VCPs behind an NLB load balancer in two
-  private subnets. The cluster also is configured to use an S3 bucket for
-  storage. ***NOTE*** You must subscribe to the Varnish Cache Plus 4.1 (Ubuntu)
-  AMI HVM from the AWS Marketplace before you launch this template. (qs-1p582k9b1)
+  This workload template deploys Varnish Enterprise nodes behind an NLB load
+  balancer in two private subnets. The cluster also is configured to use an
+  S3 bucket for storage. ***NOTE*** You must subscribe to the Varnish Enterprise 6
+  (Ubuntu) AMI HVM from the AWS Marketplace before you launch this template.
+  (qs-1p582k9b1)
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -25,7 +26,7 @@ Metadata:
       - VolumeName
       - MountPoint
     - Label:
-        default: VCP Workload Nodes Configuration
+        default: VE Workload Nodes Configuration
       Parameters:
       - WorkloadNodesSSHCIDR
       - WorkloadNodesMinSize
@@ -80,7 +81,7 @@ Metadata:
       WorkloadNodesMinSize:
         default: Workload nodes minimum size
       WorkloadNodesSSHCIDR:
-        default: CIDR range used to access the VCP nodes
+        default: CIDR range used to access the VE nodes
 Parameters:
   KeyPairName:
     Description: >-
@@ -116,7 +117,7 @@ Parameters:
   VarnishSSLCertificateSecretsManagerKey:
     Description: The AWS Secrets Manager key of an existing SSL certificate to install within Varnish. See Deployment Guide.
     Type: String
-    Default: ""
+    Default: AWS::NoValue
   QSS3KeyPrefix:
     AllowedPattern: ^[0-9a-zA-Z-/]*$
     ConstraintDescription: >-
@@ -171,6 +172,11 @@ Parameters:
     AllowedValues:
       - t2.small
       - t2.medium
+      - t3.small
+      - t3.medium
+      - t3.large
+      - t3.xlarge
+      - t3.2xlarge
       - m3.medium
       - m3.large
       - m3.xlarge
@@ -180,6 +186,12 @@ Parameters:
       - m4.4xlarge
       - m4.10xlarge
       - m4.16xlarge
+      - m5.large
+      - m5.xlarge
+      - m5.2xlarge
+      - m5.4xlarge
+      - m5.12large
+      - m5.24large
       - r3.large
       - r3.xlarge
       - r3.2xlarge
@@ -191,6 +203,16 @@ Parameters:
       - r4.4xlarge
       - r4.8xlarge
       - r4.16xlarge
+      - r5.large
+      - r5.xlarge
+      - r5.2xlarge
+      - r5.4xlarge
+      - r5.12xlarge
+      - r5.24xlarge
+      - d2.xlarge
+      - d2.2xlarge
+      - d2.4xlarge
+      - d2.8xlarge
       - i2.xlarge
       - i2.2xlarge
       - i2.4xlarge
@@ -244,35 +266,43 @@ Rules:
       AssertDescription: All subnets must in the VPC
 Conditions:
   UserProvidedSSL:
-    !Not [ !Equals [ !Ref VarnishSSLCertificateSecretsManagerKey, "" ]]
+    !Not [ !Equals [ !Ref VarnishSSLCertificateSecretsManagerKey, "AWS::NoValue" ]]
 Mappings:
   AWSAMIRegionMap:
     AMI:
-      UBUNTUVCP41: ubuntu-14.04-VCP4.1.10r4-1
+      UBUNTUVE6: ubuntu-18.04-VE6.0.1r5-1
     ap-northeast-1:
-      UBUNTUVCP41: ami-c035e0bf
+      UBUNTUVE6: ami-0d6220fab731c1023
     ap-northeast-2:
-      UBUNTUVCP41: ami-e5fd488b
+      UBUNTUVE6: ami-09f0de653bc501190
+    ap-south-1:
+      UBUNTUVE6: ami-0d3124ccc375c65af
     ap-southeast-1:
-      UBUNTUVCP41: ami-b14a49cd
+      UBUNTUVE6: ami-0b427c8ebdb22ce0a
     ap-southeast-2:
-      UBUNTUVCP41: ami-f881589a
+      UBUNTUVE6: ami-0e93b03052e409ed8
+    ca-central-1:
+      UBUNTUVE6: ami-09bb69575f5310d8f
     eu-central-1:
-      UBUNTUVCP41: ami-54dce0bf
+      UBUNTUVE6: ami-057e0fb712d14341a
+    eu-north-1:
+      UBUNTUVE6: ami-1dd45d63
     eu-west-1:
-      UBUNTUVCP41: ami-9a676b70
+      UBUNTUVE6: ami-01de6eb3fb5024e04
     eu-west-2:
-      UBUNTUVCP41: ami-e553bd82
+      UBUNTUVE6: ami-0a91cd170519f17b6
     eu-west-3:
-      UBUNTUVCP41: ami-4c0bba31
+      UBUNTUVE6: ami-0d9c8cf10883509dd
+    sa-east-1:
+      UBUNTUVE6: ami-08b477eb25c1eed1e
     us-east-1:
-      UBUNTUVCP41: ami-58ffab27
+      UBUNTUVE6: ami-0c27463b6e9453fd1
     us-east-2:
-      UBUNTUVCP41: ami-212a1344
+      UBUNTUVE6: ami-0ecddcf4d768accea
     us-west-1:
-      UBUNTUVCP41: ami-0b45a268
+      UBUNTUVE6: ami-088115b2b9d1593a1
     us-west-2:
-      UBUNTUVCP41: ami-36246a4e
+      UBUNTUVE6: ami-037859d2ed99107b0
 
 #
 # Main resources from here
@@ -311,6 +341,9 @@ Resources:
       Subnets:
       - !Ref PublicSubnet1ID
       - !Ref PublicSubnet2ID
+      LoadBalancerAttributes:
+      - Key: load_balancing.cross_zone.enabled
+        Value: true
   NLBListener80:
     Type : AWS::ElasticLoadBalancingV2::Listener
     Properties:
@@ -375,7 +408,7 @@ Resources:
           - sts:AssumeRole
       Path: /
       Policies:
-      - PolicyName: VCPQuickStartS3Policy
+      - PolicyName: VEQuickStartS3Policy
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -463,11 +496,13 @@ Resources:
       - IpProtocol: tcp
         FromPort: 80
         ToPort: 80
-        SourceSecurityGroupId: !Ref ELBSecurityGroup
+        # SourceSecurityGroupId: !Ref ELBSecurityGroup
+        CidrIp: 0.0.0.0/0
       - IpProtocol: tcp
         FromPort: 443
         ToPort: 443
-        SourceSecurityGroupId: !Ref ELBSecurityGroup
+        # SourceSecurityGroupId: !Ref ELBSecurityGroup
+        CidrIp: 0.0.0.0/0
       - IpProtocol: tcp
         FromPort: 22
         ToPort: 22
@@ -534,7 +569,7 @@ Resources:
                 else
                   # Different
                   cp /${MountPoint}/nodes.conf /etc/varnish/nodes.conf
-                  service vha-agent force-reload
+                  systemctl reload vha-agent
                 fi
               mode: "000755"
               owner: "root"
@@ -584,7 +619,7 @@ Resources:
             02_restart_hitch_service:
               command: !If
                 - UserProvidedSSL
-                - "service hitch restart"
+                - "systemctl restart hitch"
                 - "touch /tmp/.nossl"
         cleanup: {}
     Properties:
@@ -593,7 +628,7 @@ Resources:
       ImageId: !FindInMap
         - AWSAMIRegionMap
         - !Ref AWS::Region
-        - UBUNTUVCP41
+        - UBUNTUVE6
       InstanceMonitoring: true
       IamInstanceProfile: !Ref SetupRoleProfile
       InstanceType: !Ref WorkloadInstanceType
@@ -606,7 +641,7 @@ Resources:
             export PATH=$PATH:/usr/local/bin
             apt-get update
             apt-get -y install python-setuptools
-            easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+            easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz || true
             echo ${VarnishBackendAddress} ${VarnishBackendProtocol} ${VHAToken} > /etc/varnish/check_inputs.txt
             cfn-init --stack ${AWS::StackName} --resource WorkloadASLaunchConfig --configsets quickstart --region ${AWS::Region}
             # Signal the status from cfn-init
@@ -730,7 +765,7 @@ Resources:
         - autoscaling:TEST_NOTIFICATION
       Tags:
       - Key: Name
-        Value: Workload VCP cluster node
+        Value: CF-Varnish-Enterprise-6-node
         PropagateAtLaunch: true
     CreationPolicy:
       ResourceSignal:
