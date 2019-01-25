@@ -2,20 +2,20 @@
 ## Varnish on the AWS Cloud
 
 
-This Quick Start deploys Varnish Cache Plus (VCP) on the AWS Cloud in about 30 minutes.
+This Quick Start deploys Varnish Enterprise (VE) on the Amazon Web Services (AWS) Cloud in about 30 minutes.
 
-VCP is the commercial enterprise version of the open-source HTTP engine and reverse HTTP proxy, Varnish Cache (VC). Both versions of Varnish speed up a website by caching (storing) a copy of a page served by your web server the first time a user visits your page. The next time the user requests the same page, the cache will serve the copy quickly, instead of requesting the page from the web server again. VCP provides usability improvements and performance enhancements over VC.
+VE is the commercial enterprise version of the open-source HTTP engine and reverse HTTP proxy, Varnish Cache (VC). Both versions of Varnish speed up a website by caching (storing) a copy of a page served by your web server the first time a user visits your page. The next time the user requests the same page, the cache will serve the copy quickly, instead of requesting the page from the web server again. VE provides usability improvements and performance enhancements over VC.
 
-This Quick Start deploys VCP into a Multi-AZ configuration on AWS with asynchronous caching data replication between Availability Zones. The Quick Start uses Ubuntu Linux as the operating system for the VCP instances.
+This Quick Start deploys VE into a Multi-AZ configuration on AWS with asynchronous caching data replication between Availability Zones. The Quick Start uses Ubuntu Linux as the operating system for the VE instances.
 
 The Quick Start offers two deployment options:
 
-- Deploying VCP into a new virtual private cloud (VPC) on AWS
-- Deploying VCP into an existing VPC on AWS
+- Deploying VE into a new virtual private cloud (VPC) on AWS
+- Deploying VE into an existing VPC on AWS
 
 You can also use the AWS CloudFormation templates as a starting point for your own implementation.
 
-![Quick Start architecture for VCP on AWS](https://d0.awsstatic.com/partner-network/QuickStart/datasheets/varnish-architecture-diagram.png)
+![Quick Start architecture for VE on AWS](https://d0.awsstatic.com/partner-network/QuickStart/datasheets/varnish-architecture-diagram.png)
 
 For architectural details, best practices, step-by-step instructions, and customization options, see the 
 [deployment guide](https://fwd.aws/av3ER).
