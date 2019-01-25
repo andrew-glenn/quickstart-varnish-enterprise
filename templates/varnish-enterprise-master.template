@@ -28,7 +28,7 @@ Metadata:
           - VolumeName
           - MountPoint
       - Label:
-          default: VCP Workload Nodes Configuration
+          default: VE Workload Nodes Configuration
         Parameters:
           - VarnishSSLCertificateSecretsManagerKey
           - WorkloadNodesSSHCIDR
@@ -85,7 +85,7 @@ Metadata:
       WorkloadNodesMinSize:
         default: Workload nodes minimum size
       WorkloadNodesSSHCIDR:
-        default: CIDR Range used to access the VCP nodes.
+        default: CIDR Range used to access the VE nodes.
 Parameters:
   AvailabilityZones:
     Description: >-
@@ -153,7 +153,7 @@ Parameters:
     Default: http
     Type: String
   VarnishSSLCertificateSecretsManagerKey:
-    Description: The AWS Secrets Manager key of an existing SSL certificate to install within Varnish. See Deployment Guide.
+    Description: The AWS Secrets Manager key of an existing SSL certificate to install within Varnish. See Deployment Guide. Leave it as AWS:NoValue if you don't need your own SSL certificate.
     Type: String
     Default: AWS::NoValue
   VHAToken:
@@ -188,47 +188,59 @@ Parameters:
     Type: String
   WorkloadInstanceType:
     AllowedValues:
-      - t2.small
-      - t2.medium
-      - m3.medium
-      - m3.large
-      - m3.xlarge
-      - m4.large
-      - m4.xlarge
-      - m4.2xlarge
-      - m4.4xlarge
-      - m4.10xlarge
-      - m4.16xlarge
-      - m5.large
-      - m5.2xlarge
-      - m5.4xlarge
-      - m5.12xlarge
-      - m5.24xlarge
-      - r3.large
-      - r3.xlarge
-      - r3.2xlarge
-      - r3.4xlarge
-      - r3.8xlarge
-      - r4.large
-      - r4.xlarge
-      - r4.2xlarge
-      - r4.4xlarge
-      - r4.8xlarge
-      - r4.16xlarge
-      - i2.xlarge
-      - i2.2xlarge
-      - i2.4xlarge
-      - i2.8xlarge
-      - i3.large
-      - i3.xlarge
-      - i3.2xlarge
-      - i3.4xlarge
-      - i3.8xlarge
-      - i3.16xlarge
-      - d2.large
-      - d2.2xlarge
-      - d2.4xlarge
-      - d2.8xlarge
+    - t2.small
+    - t2.medium
+    - t3.small
+    - t3.medium
+    - t3.large
+    - t3.xlarge
+    - t3.2xlarge
+    - m3.medium
+    - m3.large
+    - m3.xlarge
+    - m4.large
+    - m4.xlarge
+    - m4.2xlarge
+    - m4.4xlarge
+    - m4.10xlarge
+    - m4.16xlarge
+    - m5.large
+    - m5.xlarge
+    - m5.2xlarge
+    - m5.4xlarge
+    - m5.12large
+    - m5.24large
+    - r3.large
+    - r3.xlarge
+    - r3.2xlarge
+    - r3.4xlarge
+    - r3.8xlarge
+    - r4.large
+    - r4.xlarge
+    - r4.2xlarge
+    - r4.4xlarge
+    - r4.8xlarge
+    - r4.16xlarge
+    - r5.large
+    - r5.xlarge
+    - r5.2xlarge
+    - r5.4xlarge
+    - r5.12xlarge
+    - r5.24xlarge
+    - d2.xlarge
+    - d2.2xlarge
+    - d2.4xlarge
+    - d2.8xlarge
+    - i2.xlarge
+    - i2.2xlarge
+    - i2.4xlarge
+    - i2.8xlarge
+    - i3.large
+    - i3.xlarge
+    - i3.2xlarge
+    - i3.4xlarge
+    - i3.8xlarge
+    - i3.16xlarge
     ConstraintDescription: Must contain a valid instance type
     Default: m4.xlarge
     Description: EC2 instance type for the workload instances.
