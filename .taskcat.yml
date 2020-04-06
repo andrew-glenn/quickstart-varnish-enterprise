@@ -19,6 +19,7 @@ tests:
     parameters:
       AvailabilityZones: $[taskcat_genaz_2]
       KeyPairName:  $[alfred_getkeypair]
+      QSS3BucketRegion: $[taskcat_current_region]
       OperatorEmail: foo@example.com
       QSS3BucketName: $[taskcat_autobucket]
     regions:
