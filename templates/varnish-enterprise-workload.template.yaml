@@ -44,6 +44,7 @@ Metadata:
         default: AWS Quick Start Configuration
       Parameters:
       - QSS3BucketName
+      - QSS3BucketRegion
       - QSS3KeyPrefix
     ParameterLabels:
       KeyPairName:
@@ -56,6 +57,8 @@ Metadata:
         default: Public subnet 2 ID
       QSS3BucketName:
         default: Quick Start S3 bucket name
+      QSS3BucketRegion:
+        default: Quick Start S3 bucket region
       QSS3KeyPrefix:
         default: Quick Start S3 key prefix
       VarnishSSLCertificateSecretsManagerKey:
@@ -118,6 +121,10 @@ Parameters:
     Description: The AWS Secrets Manager key of an existing SSL certificate to install within Varnish. See Deployment Guide.
     Type: String
     Default: AWS::NoValue
+  QSS3BucketRegion:
+    Default: 'us-east-1'
+    Description: 'The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.'
+    Type: String
   QSS3KeyPrefix:
     AllowedPattern: ^[0-9a-zA-Z-/]*$
     ConstraintDescription: >-
@@ -265,6 +272,7 @@ Rules:
         - !RefAll AWS::EC2::VPC::Id
       AssertDescription: All subnets must in the VPC
 Conditions:
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
   UserProvidedSSL:
     !Not [ !Equals [ !Ref VarnishSSLCertificateSecretsManagerKey, "AWS::NoValue" ]]
 Mappings:
@@ -330,7 +338,7 @@ Resources:
       - !Ref PublicSubnet2ID
       LoadBalancerAttributes:
       - Key: load_balancing.cross_zone.enabled
-        Value: true
+        Value: 'true'
   NLBListener80:
     Type : AWS::ElasticLoadBalancingV2::Listener
     Properties:
@@ -403,7 +411,9 @@ Resources:
             Action:
             - s3:GetObject
             Resource:
-              !Sub arn:aws:s3:::${QSS3BucketName}/${QSS3KeyPrefix}*
+              !Sub
+              - arn:${AWS::Partition}:s3:::${S3Bucket}/${QSS3KeyPrefix}*
+              - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       - PolicyName: WorkloadSetup
         PolicyDocument:
           Statement:
@@ -523,7 +533,10 @@ Resources:
           files:
             "/etc/varnish/cfn-scripts/configure_varnish.sh":
               source:
-               !Sub 'https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}scripts/varnish.sh'
+                !Sub
+                 - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}scripts/varnish.sh'
+                 - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+                   S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
               mode: "000755"
               owner: "root"
               group: "root"
@@ -746,14 +759,14 @@ Resources:
             - "GroupDesiredCapacity"
             - "GroupTerminatingInstances"
             - "GroupInServiceInstances"
-      NotificationConfiguration:
-        TopicARN: !Ref NotificationTopic
-        NotificationTypes:
-        - autoscaling:EC2_INSTANCE_LAUNCH
-        - autoscaling:EC2_INSTANCE_LAUNCH_ERROR
-        - autoscaling:EC2_INSTANCE_TERMINATE
-        - autoscaling:EC2_INSTANCE_TERMINATE_ERROR
-        - autoscaling:TEST_NOTIFICATION
+      NotificationConfigurations:
+        - TopicARN: !Ref NotificationTopic
+          NotificationTypes:
+          - autoscaling:EC2_INSTANCE_LAUNCH
+          - autoscaling:EC2_INSTANCE_LAUNCH_ERROR
+          - autoscaling:EC2_INSTANCE_TERMINATE
+          - autoscaling:EC2_INSTANCE_TERMINATE_ERROR
+          - autoscaling:TEST_NOTIFICATION
       Tags:
       - Key: Name
         Value: CF-Varnish-Enterprise-6-node
