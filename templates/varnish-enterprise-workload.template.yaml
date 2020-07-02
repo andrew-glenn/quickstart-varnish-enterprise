@@ -7,6 +7,8 @@ Description: >-
   (Ubuntu) AMI HVM from the AWS Marketplace before you launch this template.
   (qs-1p582k9b1)
 Metadata:
+  QuickStartDocumentation:
+    EntrypointName: "Launch into an existing VPC"
   AWS::CloudFormation::Interface:
     ParameterGroups:
     - Label:
