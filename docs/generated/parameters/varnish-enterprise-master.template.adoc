@@ -1,0 +1,51 @@
+
+.VPC Network Configuration
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default Value|Description|Availability zones
+(`AvailabilityZones`)|`**__Requires Input__**`|List of Availability Zones to use for the subnets in the VPC. Only two Availability Zones are used for this deployment, and the logical order of your selections is preserved.|VPC CIDR
+(`VPCCIDR`)|`10.0.0.0/16`|CIDR block for the VPC.|Public subnet 1 CIDR
+(`PublicSubnet1CIDR`)|`10.0.128.0/20`|CIDR block for the public (DMZ) subnet 1 located in Availability Zone 1.|Public subnet 2 CIDR
+(`PublicSubnet2CIDR`)|`10.0.144.0/20`|CIDR block for the public (DMZ) subnet 2 located in Availability Zone 2.
+|===
+.Amazon EC2 Configuration
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default Value|Description|Key pair name
+(`KeyPairName`)|`**__Requires Input__**`|The name of an existing public/private key pair, which allows you to securely connect to your instance after it launches.|Workload servers instance type
+(`WorkloadInstanceType`)|`m4.xlarge`|EC2 instance type for the workload instances.
+|===
+.Amazon EFS Configuration
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default Value|Description|EFS volume name
+(`VolumeName`)|`myEFSvolume`|A name to be used for the EFS volume.|Linux mount point
+(`MountPoint`)|`myEFSvolume`|A Linux mount point for workload nodes to mount the EFS volume.
+|===
+.VE Workload Nodes Configuration
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default Value|Description|Secrets Manager key of SSL certificate
+(`VarnishSSLCertificateSecretsManagerKey`)|`AWS::NoValue`|The AWS Secrets Manager key of an existing SSL certificate to install within Varnish. See Deployment Guide. Leave it as AWS:NoValue if you don't need your own SSL certificate.|CIDR Range used to access the VE nodes.
+(`WorkloadNodesSSHCIDR`)|`127.0.0.1/32`|CIDR block for SSH clients|Workload nodes minimum size
+(`WorkloadNodesMinSize`)|`2`|The minimum size of the Auto Scaling group of workload nodes.|Workload nodes maximum size
+(`WorkloadNodesMaxSize`)|`4`|The maximum size of the Auto Scaling group of workload nodes.|Workload nodes desired capacity
+(`WorkloadNodesDesiredCapacity`)|`2`|The desired capacity for the Auto Scaling group of workload nodes.|Operator email
+(`OperatorEmail`)|`**__Requires Input__**`|Email address that notifications of any scaling operations will be sent to.
+|===
+.Varnish Software Configuration
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default Value|Description|Varnish backend address
+(`VarnishBackendAddress`)|`127.0.0.1`|Web server backend IP/hostname address. Customized port/TCP can be added after colon (:). For example: 127.0.0.1:80|Varnish backend protocol
+(`VarnishBackendProtocol`)|`http`|Internet protocol. It can be either HTTP or HTTPS.|VHA token string
+(`VHAToken`)|`MYTOKEN`|Varnish High Availability (VHA) token can include numbers, lowercase letters, uppercase letters, hyphens (-), underscores (_), equal signs (=), and forward slashes (/).
+|===
+.AWS Quick Start Configuration
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default Value|Description|Quick Start S3 bucket name
+(`QSS3BucketName`)|`aws-quickstart`|S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).|Quick Start S3 bucket region
+(`QSS3BucketRegion`)|`us-east-1`|The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.|Quick Start S3 key prefix
+(`QSS3KeyPrefix`)|`quickstart-varnish-enterprise/`|S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).
+|===

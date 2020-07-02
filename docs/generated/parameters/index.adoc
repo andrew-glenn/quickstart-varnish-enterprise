@@ -1,1 +1,6 @@
-// placeholder
+
+=== Launch into a new VPC
+include::varnish-enterprise-master.template.adoc[]
+
+=== Launch into an existing VPC
+include::varnish-enterprise-workload.template.adoc[]
